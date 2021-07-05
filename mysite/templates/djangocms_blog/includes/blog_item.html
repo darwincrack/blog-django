@@ -1,0 +1,106 @@
+{% load bootstrap4 djangocms_blog i18n easy_thumbnails_tags cms_tags bootstrap4 %}
+
+<article id="post-{{ post.slug }}" class="post-item">
+                        <!-- Post header-->
+                        <header class="mb-4">
+                            <!-- Post title-->
+                        
+                             <h2 class="fw-bolder mb-1"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+                                    {% if post.subtitle %}
+                                        <h5 class="mb-3">{{ post.subtitle }}</h5>
+                                    {% endif %}
+
+
+                                    {% block blog_meta %}
+                                        {% if post.author %}
+                                            <!-- Post meta content-->
+                                            <div class="text-muted fst-italic mb-2">
+
+                                                {% if post.date_published %}
+                                               
+                                                    {{ post.date_published|date:"DATE_FORMAT" }}
+                                                
+                                                {% endif %}
+
+                                                
+                                              {% trans "by" %} <a href="{% url 'djangocms_blog:posts-author' post.author.get_username %}">{% if post.author.get_full_name %}{{ post.author.get_full_name }}{% else %}{{ post.author }}{% endif %}</a>
+
+                                            </div>
+                                       {% endif %}
+
+                                        <!-- Post categories-->
+                                        {% if post.categories.exists %}
+                                            {% for category in post.categories.all %}
+                                                {% if category.slug %}
+                                               
+                                                    <a class="badge bg-secondary text-decoration-none link-light" href="{% url 'djangocms_blog:posts-category' category=category.slug %}" class="blog-categories-{{ category.count }}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                       
+
+
+
+
+                                    {% endblock %}
+
+
+                        </header>
+
+
+                        <!-- Preview image figure-->
+
+                           {% if image and post.main_image %}
+                            
+                                {% thumbnail post.main_image post.thumbnail_options.size crop=post.thumbnail_options.crop upscale=post.thumbnail_options.upscale subject_location=post.main_image.subject_location as thumb %}
+
+                                 <a href="{{ post.get_absolute_url }}">
+                                    <figure class="mb-4">
+                                    <img class="img-fluid rounded" src="{{ post.main_image.url }}" alt="{{ post.main_image.default_alt_text }}" alt="{{ post.main_image.default_alt_text }}"  width="900" height="400">
+                                    </figure>
+                                </a>
+
+                                
+                            
+                            {% else %}
+                                {% media_images post as previews %}
+                                
+                                  {% for preview in previews %}
+                                    <a href="{{ post.get_absolute_url }}">
+
+                                        <figure class="mb-4">
+                                            <img class="img-fluid rounded" src="{{ preview }}">
+                                        </figure>
+                                    </a>
+
+                                  {% endfor %}
+                              
+                            {% endif %}
+
+
+                        <!-- Post content-->
+                        <section class="mb-5">
+                            {% if not TRUNCWORDS_COUNT %}
+                                {% render_model post "abstract" "" "" "safe" %}
+                            {% else %}
+                                {% render_model post "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
+                            {% endif %}
+
+
+                             <!-- Post tags-->              
+                             
+                                {% if post.tags.exists %}
+                                <span>Etiquetas: </span>
+                                            {% for tag in post.tags.all %}
+                                               <a class="badge bg-secondary text-decoration-none link-light" href="{% url 'djangocms_blog:posts-tagged' tag=tag.slug %}" class="blog-tag blog-tag-{{ tag.count }}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                            <br>
+                            <p></p>
+                            <footer class="read-more btn-blog">
+                            <a href="{{ post.get_absolute_url }}">{% trans "read more" %} &raquo;</a>
+                        </footer>
+
+                        </section>
+                        
+                    </article>

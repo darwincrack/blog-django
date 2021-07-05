@@ -1,0 +1,34 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags %}
+{% block meta %}
+    {% comment %}
+    This is needed if you can't add ``{% include "meta/meta.html" %}`` in the django CMS template attached to the blog
+    page or if you use djangocms-page-meta.
+
+    Please check the documentation at https://djangocms-blog.readthedocs.io/en/latest/features/meta.html for more
+    details about the correct template configuration for social media tags rendering.
+    {% endcomment %}
+    {% if meta %}
+        {% include "meta/meta.html" %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock meta %}
+
+{% block content %}
+
+
+<div class="col-lg-8">
+    {% block content_blog %}{% endblock %}
+    {% placeholder "content" %}
+</div>
+
+<!-- Side widgets-->
+<div class="col-lg-4">
+    {% placeholder "sidebar" %}           
+</div>
+
+
+
+
+{% endblock content %}
